@@ -1,0 +1,41 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: auto;
+  padding: 2rem;
+  overflow-x: hidden;
+}
+
+*, *::after, *::before {
+	-webkit-user-select: none;
+	-webkit-user-drag: none;
+	-webkit-app-region: no-drag;
+	cursor: default;
+}
+
+.task_img{
+  width:30px;
+  height: 30px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+.task_container{
+  border: 1px solid #999999;
+  margin-bottom: 16px;
+  padding: 16px;
+  width: 100%;
+  border-radius: 10px;
+  display: inline-block;
+  vertical-align: middle;
+  -webkit-transform: perspective(1px) translateZ(0);
+  transform: perspective(1px) translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  -webkit-transition-property: transform;
+  transition-property: transform;
+}
+
+.task_container:hover, .task_container:focus, .task_container:active{
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
