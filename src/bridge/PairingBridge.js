@@ -1,12 +1,12 @@
-
-
 const net = require('net');
 const tls = require('tls');
 const fs = require('fs');
 const util = require('../util/util');
-const { remote, BrowserWindow } = require('electron')
+const os = require('os'); 
+const {machineId, machineIdSync} = require('node-machine-id');
 
-const startAndroidBridge = (onData) => {
+
+const startPairingBridge = (onPairRequest) => {
     
   var crypto = util.genKeys();
   
@@ -14,32 +14,25 @@ const startAndroidBridge = (onData) => {
     key: crypto.pkey,
     cert: crypto.cert,
     rejectUnauthorized: false,
-    requestCert: true
+    requestCert: false
   }; 
   
   const server = tls.createServer(options, (socket) => {
    /*  console.log(socket.getPeerCertificate());
  */
-    console.log('server connected',
-                 socket.authorized ? 'authorized' : 'unauthorized');
-
-    
-    console.log('cipher '  + socket.getCipher().standardName);
-    socket.write('conected\n');
     socket.setEncoding('utf8');/* 
     console.log(socket.getPeerCertificate()); */
 
     socket.on('data', function(data){
-        onData(data);
+        onPairRequest(data, socket);
     });
-    
+
     socket.on('end', function(){
-        socket.end();
+            socket.end();
     });
-    
-    
+
     socket.on('error', function(){
-      console.log("DISCONNECTED");
+        console.log("DISCONNECTED");
     })
   });   
 
@@ -53,5 +46,19 @@ const startAndroidBridge = (onData) => {
 
 }
 
+const acceptPairRequest = (socket) => {
+    let id = machineIdSync()
+    const computerName = os.hostname()
+    
+    //send accept signal
+    if(socket!=undefined){            
+        var accept = {};
+        accept["type"]="PAIR_ACCEPT";
+        accept["id"]=id;
+        accept["name"]=computerName;
+        socket.write(JSON.stringify(accept));
+    }
 
-exports.startAndroidBridge=startAndroidBridge;
+}
+
+exports.startPairingBridge=startPairingBridge;

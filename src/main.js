@@ -2,9 +2,12 @@ const { triggerAsyncId } = require('async_hooks');
 const { app, BrowserWindow, screen } = require('electron');
 const path = require('path');
 const {startAndroidBridge} = require('src/bridge/AndroidBridge')
+const {startPairingBridge} = require('src/bridge/PairingBridge')
+
 const util = require('./util/util')
 const notifier = require('node-notifier');
 const storage = require('electron-json-storage');
+const { ipcMain } = require('electron');
 
 const shell  = require('electron').shell;
 
@@ -125,25 +128,29 @@ function onData(data){
 
 }
 
-function onConnectRequest(data){
-  mainWindow.webContents.send('CONNECT_REQUEST', data);
-  console.log(data);
+
+ipcMain.on("START_SERVER_PAIRED", (event, dbName) => {
+  startAndroidBridge(onData);
+});
+
+
+ipcMain.on("START_SERVER_UNPAIRED", (event, dbName) => {
+  startPairingBridge(onPairRequest);
+  console.log("STARTPAIR");
+
+});
+
+function onPairRequest(request){
+  mainWindow.webContents.send('PAIR_REQUEST', request);
 }
-function onConnectSuccess(data){
-  mainWindow.webContents.send('CONNECT_SUCCESS', data);
-  console.log(data);
-}
-function onDisconnect(data){
-  mainWindow.webContents.send('CONNECT_SUCCESS', data);
-  console.log(data);
-}
+
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   app.setAppUserModelId('com.nam.hermes')
   createWindow();
-  startAndroidBridge(onData);
 
 
 });

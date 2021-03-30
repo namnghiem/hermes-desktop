@@ -39,7 +39,9 @@ class Tasks extends React.Component {
     )
   }
   componentDidMount(){
-     ipcRenderer.on('SYNC_TASKS', (event, arg) => {
+    ipcRenderer.send("START_SERVER_PAIRED");
+
+    ipcRenderer.on('SYNC_TASKS', (event, arg) => {
       console.log(arg);
 
       this.setState({
